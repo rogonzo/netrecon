@@ -72,7 +72,7 @@ def main() -> int:
 
     results = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = {pool.submit(scan_port, host, pt, args.timeout): pt for pt in ports}
+        futures = [pool.submit(scan_port, host, pt, args.timeout) for pt in ports]
         for fut in as_completed(futures):
             r = fut.result()
             if r:
