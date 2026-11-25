@@ -40,6 +40,11 @@ def grab_banner(sock: socket.socket, port: int, timeout: float) -> str:
     except Exception:
         return ""
 
+def scan_port_throttled(host: str, port: int, timeout: float, delay: float) -> dict | None:
+    import time
+    time.sleep(delay)
+    return scan_port(host, port, timeout)
+
 
 def scan_port(host: str, port: int, timeout: float) -> dict | None:
     try:
@@ -58,6 +63,7 @@ def main() -> int:
     p.add_argument("-p", "--ports", default="1-1024", help="Ports, e.g. 22,80,443 or 1-1024")
     p.add_argument("-t", "--timeout", type=float, default=1.0, help="Per-port timeout (s)")
     p.add_argument("-w", "--workers", type=int, default=100, help="Thread count")
+    p.add_argument("-d", "--delay", type=float, default=0.0, help="Delay between port attempts (s)")
     p.add_argument("-o", "--output", default="output/results.json", help="JSON output path")
     args = p.parse_args()
 
@@ -72,7 +78,7 @@ def main() -> int:
 
     results = []
     with ThreadPoolExecutor(max_workers=args.workers) as pool:
-        futures = [pool.submit(scan_port, host, pt, args.timeout) for pt in ports]
+        futures = {pool.submit(scan_port_throttled, host, pt, args.timeout, args.delay): pt for pt in ports}
         for fut in as_completed(futures):
             r = fut.result()
             if r:
