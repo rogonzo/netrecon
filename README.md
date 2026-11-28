@@ -18,11 +18,11 @@ detection tests, or ingested by a scanner pipeline.
 **Only run against systems you own or have written permission to test.**
 Intended for home labs and explicitly authorized engagements.
 
+## Demo
+
+![netrecon demo](screenshots/netrecon-demo.png)
+
 ## Usage
 ```bash
 python netrecon.py 127.0.0.1 -p 1-1024
 python netrecon.py scanme.nmap.org -p 22,80,443 -o out/scan.json
-
-## Demo
-
-![netrecon demo](screenshots/netrecon-demo.png)
